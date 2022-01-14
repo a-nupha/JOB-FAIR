@@ -1,9 +1,18 @@
 const express = require("express");
-const app = express();
-const mysql = require("mysql");
-const cors = require("cors");
-const http = require('http');
-const PORT = process.env.PORT || 3001
+const users = require('./controller/userController')
+const register = require('./controller/registerController')
+const booking=require('./controller/bookingController')
+const clients=require('./controller/clientController')
+const contractors=require('./controller/contractorController')
+const jobs=require('./controller/jobController')
+const app=express();
+const bodyParser = require('body-parser')
+app.use(bodyParser.json());
+
+
+
+app.use('/api', [booking,jobs]);
+app.use('/api/users', [users,register,clients,contractors]);
 
 app.use(cors());
 app.use(express.json());
