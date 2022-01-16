@@ -2,19 +2,13 @@
 <v-content>
     <v-container>
         <v-layout justify-center>
-            <v-flex  md4 lg3 class="grey lighten-4 rounded-xl">
+            <v-flex  xs12 md5 lg6 class="grey lighten-4 rounded-xl">
                 <v-container>
-                    <v-card class="rounded-xl" flat>
+                    <v-card >
                         <v-form>
                             <div class="
-                      d-flex
-                      flex-column
-                      align-center
-                      rounded-xl
-                    ">
-                                <v-flex mt-5>
-
-                                </v-flex>
+                            d-flex
+                            ">
                             </div>
 
                             <v-layout mt-10>

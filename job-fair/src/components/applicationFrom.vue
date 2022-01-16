@@ -2,7 +2,7 @@
 <v-content>
     <v-container>
         <v-layout justify-center>
-            <v-flex  md4 class="grey lighten-4 rounded-xl">
+            <v-flex xs12 md5 lg6 class="grey lighten-4 rounded-xl">
                 <v-container>
                     <v-card class="rounded-xl" flat>
                         <v-form>
