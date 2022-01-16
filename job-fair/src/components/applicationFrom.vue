@@ -19,7 +19,7 @@
                             <v-layout mt-5 align-center justify-center>
                                 <!-- <v-container fluid > -->
                                 <v-card ref="form">
-                                <v-col md="10" xs="12">
+                                <v-col md="12" xs="12">
                                     <v-flex>
                                         <v-text-field
                                         ref="userNameModel"
@@ -50,16 +50,18 @@
                                         />
 
                                         <v-text-field
-                                        ref="name"
+                                        ref="firstNameModel"
+                                        v-model="firstNameModel"
                                         :label="firstNameLabel" 
                                         :placeholder="firstNamePlaceholder" 
                                         outlined dense 
                                         :rules="firstNameRules" 
                                         :counter="firstNameCounter" 
                                         :maxlength="firstNameMaxlength" 
-                                        v-model="firstNameModel"/>
+                                        />
                                         
                                         <v-text-field 
+                                        ref="lastNameModel"
                                         :label="lastNameLabel" 
                                         :placeholder="lastNamePlaceholder" 
                                         outlined dense 
@@ -70,14 +72,15 @@
 
                                        
                                         <v-text-field 
+                                        ref="pidModel"
+                                        v-model="pidModel"
                                         :label="pidLabel" 
                                         :placeholder="pidPlaceholder" 
                                         v-mask="'#-####-#####-##-#'" 
                                         outlined dense :maxlength="17" 
                                         :rules="[rules.chcekPid]"
-                                        
                                         @blur="checkDigitId(pidModel)"
-                                        v-model="pidModel">
+                                        >
                                         </v-text-field>
 
 
@@ -86,15 +89,16 @@
                                                     <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-text-field
+                                                            ref="birthDayModel"
+                                                            v-model="birthDayModel"
                                                             :label="birthDayLabel"
                                                             :placeholder="birthDayPlaceholder" 
-                                                            v-model="birthDayModel"
                                                             locale="th"
                                                             :role="birthDayrules"
                                                             readonly outlined dense
                                                             v-bind="attrs" v-on="on"></v-text-field>
                                                         </template>
-                                                        <v-date-picker locale="th" 
+                                                        <v-date-picker locale="th"                                                   
                                                         v-model="birthDayModel" 
                                                         :active-picker.sync="activePicker" 
                                                         :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)" min="1950-01-01" @change="save"></v-date-picker>
@@ -105,6 +109,7 @@
 
                                         <v-flex md12>
                                             <v-text-field 
+                                             ref="phoneModel"
                                             :label="phoneLabel" 
                                             :placeholder="phonePlaceholder" 
                                             outlined dense 
@@ -116,6 +121,7 @@
 
                                         <v-flex md12>
                                             <v-text-field
+                                            ref="ageModel"
                                             :label="ageLabel"
                                             :placeholder="agePlaceholder" 
                                             outlined dense
@@ -129,7 +135,8 @@
 
                                         <v-layout>
                                         <v-flex md5 xs5 lg5>
-                                            <v-text-field 
+                                            <v-text-field
+                                            ref="address1Model"
                                             :label="address1Label"
                                             outlined dense 
                                             :rules="address1rules"
@@ -140,7 +147,9 @@
 
                                         <v-flex md7 xs7 lg7>
                                             <v-text-field
+                                            ref="address2Model"
                                             :label="address2Label"
+                                            :placeholder="address2Placeholder"
                                             prepend-icon=" "
                                             outlined dense
                                             :rules="address2rules"
@@ -161,23 +170,26 @@
 
                                         <v-flex md12 style="color: #0277bd;" class="d-flex align-left justify-left pa-1 mx-auto">
                                             <div v-if="zipcode">
-                                                ที่อยู่ :{{province.indexOf('กรุงเทพมหานคร') == 0 ? 'แขวง' : 'ตำบล:'}} {{district}} {{province.indexOf('กรุงเทพมหานคร') == 0 ? 'เขต:' : 'อำเภอ:'}} {{amphoe}} {{province.indexOf('กรุงเทพมหานคร') == 0 ? '' : 'จังหวัด:'}} {{province}}
+                                                ที่อยู่ : {{address1Model}} {{address2Model}} {{province.indexOf('กรุงเทพมหานคร') == 0 ? 'แขวง' : 'ตำบล:'}} {{district}} {{province.indexOf('กรุงเทพมหานคร') == 0 ? 'เขต:' : 'อำเภอ:'}} {{amphoe}} {{province.indexOf('กรุงเทพมหานคร') == 0 ? '' : 'จังหวัด:'}} {{province}}
                                             </div>
                                         </v-flex>
 
                                         <v-flex md12>
-                                            <v-text-field 
+                                            <v-text-field
+                                            ref="emailModel"
+                                            v-model="emailModel"
                                             :label="emailLable"
                                             :placeholder="emailPlaceholder"
                                              outlined dense :rules="emailRules" 
                                             :counter="emailCounter"
                                             :maxlength="emailMaxlength"
-                                            v-model="emailModel"/>
+                                            />
                                         </v-flex>
 
 
                                          <v-flex md12>
                                              <v-autocomplete
+                                                ref="educationModel"
                                                 v-model="educationModel"
                                                 :items="educationalItems"
                                                 :rules="[() => !!educationModel || 'กรุณาเลือก']"
@@ -189,6 +201,7 @@
                                         </v-flex>
                                         <v-flex md12>
                                              <v-autocomplete
+                                                ref="jobModel"
                                                 v-model="jobModel"
                                                 :items="jobitems"
                                                 outlined
@@ -288,7 +301,19 @@ export default {
             return {
                 userNameModel: this.userNameModel,
                 userPasswordModel:this.userPasswordModel,
-            }
+                firstNameModel: this.firstNameModel,
+                lastNameModel:this.lastNameModel,
+                pidModel:this.pidModel,
+                birthDayModel:this.birthDayModel,
+                phoneModel:this.phoneModel,
+                ageModel:this.ageModel,
+                address1Model:this.address1Model,
+                address2Model:this.address2Model,
+                // zipcode:this.zipcode,
+                emailModel:this.emailModel,
+                educationModel:this.educationModel,
+                jobModel:this.jobModel,
+                }
         },
     },
 
@@ -387,7 +412,7 @@ export default {
                 value => !!value || 'กรุณากรอกบ้านเลขที่',
                  ],
 
-        address2Label:'',
+        address2Label:'ซอย/ถนน',
         address2Placeholder:'กรุณากรอก ซอย/ถนน',
         address2Model:'',
         address2Counter: 50,
@@ -466,8 +491,7 @@ export default {
                 'อื่นๆ',
                 'งาน Part-time/พนักงานชั่วคราว',
                 'Freelance'],
-        jobModel: [],
-        
+        jobModel:'',
         date: null,
         menu: false,
         district: '',
