@@ -2,10 +2,10 @@ const mysql = require("mysql");
 const util = require("util");
 
 var db = mysql.createConnection({
-  host: "localhost",
   user: "root",
-  password: "",
-  database: "db_jobfair_dev",
+  host: "localhost",
+  password: "12345678",
+  database: "jobfair",
 });
 
 db.query = util.promisify(db.query);
