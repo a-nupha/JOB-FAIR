@@ -18,6 +18,7 @@
 
                             <v-layout mt-5 align-center justify-center>
                                 <!-- <v-container fluid > -->
+                                    <v-card ref="form">
                                 <v-col md="10" xs="12">
                                     <v-flex>
                                         <v-text-field
@@ -27,6 +28,8 @@
                                         :counter="userNameCounter"
                                         :maxlength="userNameMaxlength"
                                         v-model="userNameModel"
+                                        @blur="handleUpdateItem($event)"
+                                        :rules="[rules.required, rules.minId, rules.requiredTimEmty]"
                                         />
 
                                         <v-text-field 
@@ -36,9 +39,15 @@
                                         :counter="userPasswordCounter"
                                         :maxlength="userPasswordMaxlength"
                                         v-model="userPasswordModel"
+                                        :rules="[rules.required, rules.minPassword]"
+                                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                        :type="show1 ? 'text' : 'password'"
+                                          hint="At least 8 characters"
+                                        @click:append="show1 = !show1"
                                         />
 
-                                        <v-text-field 
+                                        <v-text-field
+                                        ref="name"
                                         :label="firstNameLabel" 
                                         :placeholder="firstNamePlaceholder" 
                                         outlined dense 
@@ -62,7 +71,10 @@
                                         :placeholder="pidPlaceholder" 
                                         v-mask="'#-####-#####-##-#'" 
                                         outlined dense :maxlength="17" 
-                                        :rules="pidrules" v-model="pidModel">
+                                        :rules="[rules.chcekPid]"
+                                        
+                                        @blur="checkDigitId(pidModel)"
+                                        v-model="pidModel">
                                         </v-text-field>
 
 
@@ -75,7 +87,7 @@
                                                             :placeholder="birthDayPlaceholder" 
                                                             v-model="birthDayModel"
                                                             locale="th"
-                                                            :role="rulesBirthDay"
+                                                            :role="birthDayrules"
                                                             readonly outlined dense
                                                             v-bind="attrs" v-on="on"></v-text-field>
                                                         </template>
@@ -94,8 +106,8 @@
                                             :placeholder="phonePlaceholder" 
                                             outlined dense 
                                             :rules="phonerules" 
-                                            :counter="20" 
-                                            :maxlength="20" 
+                                            :counter="phoneCounter" 
+                                            :maxlength="phoneMaxlength" 
                                             v-model="phoneModel"/>
                                         </v-flex>
 
@@ -165,6 +177,7 @@
                                              <v-autocomplete
                                                 v-model="educationModel"
                                                 :items="educationalItems"
+                                                :rules="[() => !!educationModel || 'กรุณาเลือก']"
                                                 outlined
                                                 dense
                                                 :label="educationLable"
@@ -180,6 +193,7 @@
                                                 chips
                                                 small-chips
                                                 :label="jobLable"
+                                                :rules="[() => !!jobModel || 'กรุณาเลือก']"
                                                 multiple
                                             ></v-autocomplete>
                                         </v-flex>
@@ -218,6 +232,7 @@
                    </v-layout>
                                     </v-flex>
                                 </v-col>
+                                   </v-card>
                                 <!-- </v-container> -->
                             </v-layout>
 
@@ -253,6 +268,7 @@ import {
     sync
 } from "vuex-pathify";
 import ThailandAutoComplete from 'vue-thailand-address-autocomplete'
+import functions from '../plugins/functions'
 
 export default {
     name: "applicationFrom",
@@ -268,19 +284,25 @@ export default {
     },
 
     data: () => ({
-        userNameLabel:'user id',
-        userNamePlaceholder:'กรุณากรอก user id',
+        userNameLabel:'user name',
+        userNamePlaceholder:'กรุณากรอก user name',
         userNameCounter:50,
         userNameMaxlength:50,
         userNameModel:'',
 
         userPasswordLabel:'user password',
-        userPasswordPlaceholder:'กรุณากรอก user id',
-        userPasswordCounter:50,
-        userPasswordMaxlength:50,
+        userPasswordPlaceholder:'กรุณากรอก user password',
+        userPasswordCounter:20,
+        userPasswordMaxlength:20,
         userPasswordModel:'',
-
-
+        show1: false,
+        rules: {
+                required: value => !!value || 'กรุณาระบุ.',
+                requiredTimEmty: value => value.indexOf(" ") < 0 || 'ห้ามมีช่องว่าง',
+                minId: v => v.length >= 8 || 'ระบุอย่างน้อย 8 ตัวอักษร',
+                minPassword: v => v.length >= 8 || 'ระบุอย่างน้อย 8 ตัวอักษร์',
+                chcekPid: value => functions.checkPID(value) || 'เลขบัตรประชาชนไม่ถูกต้อง',
+                },
 
         firstNameLabel:'ชื่อ',
         firstNamePlaceholder:'กรุณากรอก ชื่อ',
@@ -289,7 +311,7 @@ export default {
         firstNameModel:'',
         firstNameRules: [
                         value => !!value || 'กรุณากรอก ชื่อ',
-                        value => (value && value.length <= 50) || 'Min 50 characters',
+                        value => (value && value.length <= 50) || 'ไม่เกิณ 50 ตัวอักษร์',
                     ],
 
 
@@ -300,17 +322,17 @@ export default {
         lastNameModel:'',
         lastNameRules: [
                         value => !!value || 'กรุณากรอก นามสกุล',
-                        value => (value && value.length <= 50) || 'Min 50 characters',
+                        value => (value && value.length <= 50) || 'ไม่เกิณ 50 ตัวอักษร์',
                     ],
 
         pidLabel:'เลขประจำตัวประชาชน',
         pidPlaceholder:'กรุณากรอกเลขประจำตัวประชาชน',
-        pidCounter:50,
-        pidMaxlength:50,
+        pidCounter:20,
+        pidMaxlength:20,
         pidModel:'',
         pidrules: [
                         value => !!value || 'กรุณากรอกเลขประจำตัวประชาชน',
-                        value => (value && value.length <= 17) || 'Min 17 characters',
+                        value => (value && value.length <= 17) || 'ไม่เกิณ 17 ตัวอักษร์',
                     ],
 
 
@@ -324,8 +346,12 @@ export default {
         phoneLabel:'เบอร์โทรศัพท์',
         phonePlaceholder:'กรุณากรอกเบอร์โทรศัพท์',
         phoneModel:'',
+        phoneCounter:10,
+        phoneMaxlength:10,
         phonerules:[
                     value => !!value || 'กรุณากรอกเบอร์โทรศัพท์',
+                    value => !!value || 'กรุณากรอกเบอร์โทรศัพท์',
+                
                 ],
 
 
@@ -339,18 +365,20 @@ export default {
                 ],
 
         zipcode: '',
+        zipcodeCounter: 5,
+        zipcodeMaxlength: 5,
         placeholderZipcode: 'รหัสไปรษณีย์',
 
         address1Label:'บ้านเลขที่',
         address1Placeholder:'กรุณากรอกบ้านเลขที่',
         address1Model:'',
-        address1Counter: 50,
-        address1Maxlength: 50,
+        address1Counter: 20,
+        address1Maxlength: 20,
         address1rules:[
                 value => !!value || 'กรุณากรอกบ้านเลขที่',
                  ],
 
-        address2Label:'ซอย/ถนน',
+        address2Label:'',
         address2Placeholder:'กรุณากรอก ซอย/ถนน',
         address2Model:'',
         address2Counter: 50,
@@ -362,13 +390,14 @@ export default {
         
 
         emailLable: 'อีเมลย์',
-        emailPlaceholder: 'กรุณาระบุอีเมลย์',
-        emailCounter: 50,
-        emailMaxlength: 50,
+        emailPlaceholder: 'กรุณากรอก อีเมลย์',
+        emailCounter: 255,
+        emailMaxlength: 255,
         emailModel: '',
         emailRules: [
-            v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
-        ],
+                value => !!value || 'กรุณากรอก อีเมลย?',
+                v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'ระบุ E-mail ไม่ถูกต้อง'
+                     ],
 
         educationLable:'วุฒิการศึกษา',
         educationModel:'',
@@ -459,6 +488,9 @@ export default {
         save(date) {
             this.$refs.menu.save(date)
         },
+        handleUpdateItem(){
+            console.log('check USER even: on-blur')
+        },
         select(address) {
             this.district = address.district
             this.amphoe = address.amphoe
@@ -469,11 +501,17 @@ export default {
 
         },
         submitForm() {
-            this.z = 'productPackage';
+            // this.z = 'productPackage';
         },
         back(){
             this.z = 'registerConsent';
+        },
+        checkDigitId(pid){
+           const value = functions.checkPID(pid)
+           console.log('value', value);
         }
+
+        
 
     },
 
