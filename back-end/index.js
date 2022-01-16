@@ -16,6 +16,7 @@ const assert = require('assert');
 // const contractors = require('./controller/contractorController')
 // const jobs = require('./controller/jobController')
 const functions = require('./functions')
+const dbConfig = require('./config/db')
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +24,15 @@ app.use(express.json());
 app.listen(PORT, function () {
     console.log(`server is running ${PORT}`);
 })
+
+const db_config = {
+    user: "wasun_199",
+    host: "db4free.net",
+    password: "WAsun@123",
+    database: "job_fair",
+};
+
+var connection = mysql.createPool(db_config);
 
 app.post("/register", (req, res) => {
     const request = req.body
@@ -53,7 +63,7 @@ app.post("/login", async (req, res) => {
         res.status(401);
     }
 
-    res.status(200).json({isSuccess: validateToken.success});
+    res.status(200).json({ isSuccess: validateToken.success });
 
     // const verifyToken = await functions.authenticateToken(token)
     // if (!validateToken.success) {
@@ -111,7 +121,37 @@ app.post("/decryptpassword", async (req, res) => {
     });
 });
 
+function handleDisconnect() {
+    connection = mysql.createConnection(dbConfig.db_config); // Recreate the connection, since
+    // the old one cannot be reused.
+    connection.connect(function (err) {              // The server is either down
+        if (err) {                                      // or restarting (takes a while sometimes).
+            console.log(' Error when connecting to db:', err);
+            setTimeout(handleDisconnect, 1000);         // We introduce a delay before attempting to reconnect,
+        }                                               // to avoid a hot loop, and to allow our node script to
+    });                                             // process asynchronous requests in the meantime.
+    // If you're also serving http, display a 503 error.
+    connection.on('  Database Error', function (err) {
+        console.log('db error: ' + err.code, err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                       // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                // server variable configures this)
+        }
+    });
+}
 
+
+app.get("/jobs", async (req, res) => {
+    connection.query("SELECT * FROM jobs", (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ err })
+        } else {
+            res.status(200).json(result)
+        }
+    });
+})
 
 
 
