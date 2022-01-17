@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
-const http = require('http');
+// const http = require('http');
 const PORT = process.env.PORT || 3001;
 const jwt = require('jsonwebtoken');
 const fileUpload = require('express-fileupload');
@@ -175,10 +175,20 @@ app.post('/api/photos', async (req, res) => {
                 for (const f of files) {
                     let name = f.name.split(".")[0]
                     f.mv('./assets/uploads/' + name + ".jpg");
+                    response.push({
+                        name: f.name,
+                        mimetype: f.mimetype,
+                        size: f.size
+                    })
                 }
             } else {
                 let name = files.name.split(".")[0]
                 files.mv('./assets/uploads/' + name + ".jpg");
+                response.push({
+                    name: files.name,
+                    mimetype: files.mimetype,
+                    size: files.size
+                })
             }
             //send response
             res.send({
