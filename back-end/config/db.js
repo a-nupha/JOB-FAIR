@@ -12,13 +12,19 @@ const util = require("util");
 // db.rollback = util.promisify(db.rollback);
 // db.beginTransaction = util.promisify(db.beginTransaction);
 
+// const db_config = {
+//   user: "wasun_199",
+//   host: "db4free.net",
+//   password: "WAsun@123",
+//   database: "job_fair",
+// };
+
 const db_config = {
-  user: "wasun_199",
-  host: "db4free.net",
-  password: "WAsun@123",
+  user: "root",
+  host: "localhost",
+  password: "12345678",
   database: "job_fair",
 };
-
 const connection = mysql.createPool(db_config);
 
 function handleDisconnect() {

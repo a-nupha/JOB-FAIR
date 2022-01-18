@@ -24,7 +24,6 @@ exports.insertContractor = async function (req) {
             user_id: req.userId,
             update_by: req.userId,
         }
-        let response = {};
         let index = 1;
         let ary_result = []
         let columnstring = ``;

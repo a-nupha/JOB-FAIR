@@ -1,9 +1,8 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const http = require('http');
+
 const dotenv = require('dotenv');
+const db = require("./config/db")
 const jwt = require('jsonwebtoken');
+const connection = db.connection;
 
 // get config vars
 const config = dotenv.config();
@@ -49,9 +48,35 @@ module.exports.validateToken = async (token, res, next) => {
     })
     return result
 }
+
 module.exports.getTokenfromBearer = (authorization) => {
     const authHeader = authorization
     const token = authHeader && authHeader.split(' ')[1]
     return token
 }
 
+module.exports.checkIsDupicateUser = async function (request) {
+    return new Promise(function (resolve, reject) {
+        try {
+            let sql = `select * from (SELECT user_name as t FROM user UNION 
+                SELECT ct_idcard as t FROM contractor_info UNION 
+                SELECT ci_idcard as t FROM client_info ) as g 
+                where g.t = '${request.username}' OR g.t = '${request.idcard}'`
+
+            connection.query(sql, function (err, res) {
+                if (err) {
+                    reject({ result: false, data: err })
+                } else {
+                    if (res.length > 0) {
+                        resolve({ result: true, data: res })
+                    } else {
+                        resolve({ result: false, data: res })
+                    }
+                }
+            });
+        } catch (e) {
+            resolve({ result: false, data: {} })
+        }
+    })
+
+}

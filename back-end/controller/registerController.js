@@ -7,7 +7,8 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const functions = require('../functions')
 const contractorController = require('../controller/contractorController')
-const clientController = require('../controller/clientController')
+const clientController = require('../controller/clientController');
+const { copyFileSync } = require("fs");
 
 const connection = db.connection;
 const config = dotenv.config();
@@ -20,10 +21,23 @@ exports.insertUsers = async function (req, res) {
   let cipher = crypto.createCipher(algorithm, key);
   let encrypted = cipher.update(password, 'utf8', 'hex') + cipher.final('hex');
   let user = {
-    // user_id: 5,
     user_name: request.user_name,
     user_pwd: encrypted,
     user_role: request.user_role
+  }
+
+  const checkIsDupicate = await functions.checkIsDupicateUser({
+    username: request.user_name,
+    idcard: request.idcard,
+  })
+
+  if (checkIsDupicate.result) {
+    res.status(400).send({
+      success: false,
+      data: {},
+      message: "is dupicate user!!"
+    });
+    return;
   }
 
   let sql = `INSERT INTO user 
