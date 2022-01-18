@@ -15,7 +15,6 @@ module.exports.generateAccessToken = function (req) {
     const token = jwt.sign(req, process.env.TOKEN_SECRET, { expiresIn: "240m" });
     return token;
 }
-
 module.exports.authenticateToken = (token, res, next) => {
     let result = null;
     jwt.verify(token, process.env.TOKEN_SECRET, (err, res) => {
