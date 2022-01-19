@@ -51,9 +51,9 @@ const connection = mysql.createPool(dbConfig.db_config);
 
 app.post("/api/login", register.logIn);
 
-app.get("/users", users.getUsers)
+app.get("/api/users", users.getUsers)
 
-app.get("/jobs", jobs.getJobs)
+app.get("/api/jobs", jobs.getJobs)
 
 app.post('/api/photos', async (req, res) => {
     try {
@@ -103,5 +103,5 @@ app.get('/api/photos', async (req, res) => {
     res.send(contents)
 })
 
-app.post("/register", register.insertUsers)
+app.post("/api/register", register.insertUsers)
 // app.use('/api/users', [users, register, clients, contractors]);

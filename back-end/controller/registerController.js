@@ -17,55 +17,62 @@ const key = process.env.SECRET_KEY;
 
 exports.insertUsers = async function (req, res) {
   const request = req.body
-  let password = request.user_pwd;
-  let cipher = crypto.createCipher(algorithm, key);
-  let encrypted = cipher.update(password, 'utf8', 'hex') + cipher.final('hex');
-  let user = {
-    user_name: request.user_name,
-    user_pwd: encrypted,
-    user_role: request.user_role
-  }
+  try {
+    let password = request.user_pwd;
+    let cipher = crypto.createCipher(algorithm, key);
+    let encrypted = cipher.update(password, 'utf8', 'hex') + cipher.final('hex');
+    let user = {
+      user_name: request.user_name,
+      user_pwd: encrypted,
+      user_role: request.user_role
+    }
 
-  const checkIsDupicate = await functions.checkIsDupicateUser({
-    username: request.user_name,
-    idcard: request.idcard,
-  })
+    const checkIsDupicate = await functions.checkIsDupicateUser({
+      username: request.user_name,
+      idcard: request.idcard,
+    })
 
-  if (checkIsDupicate.result) {
-    res.status(400).send({
-      success: false,
-      data: {},
-      message: "is dupicate user!!"
-    });
-    return;
-  }
+    console.log("checkIsDupicate --> ", checkIsDupicate)
 
-  let sql = `INSERT INTO user 
+    if (checkIsDupicate.result) {
+      res.status(400).send({
+        success: false,
+        data: {},
+        message: "is dupicate user!!"
+      });
+      return;
+    }
+
+    let sql = `INSERT INTO user 
             ( user_name, user_pwd, user_role )
               VALUES
             ( ?, ?, ? )`;
 
-  connection.query(sql, [user.user_name, user.user_pwd, user.user_role], async function (err, data) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    } else {
-      let insertUser = null
-      const userId = data.insertId
-      request['userId'] = userId;
-      if (request.user_type == 2) {
-        insertUser = await contractorController.insertContractor(request)
-      } else if (request.user_type == 3) {
-        insertUser = await clientController.insertClient(request)
-      }
-
-      if (insertUser.success) {
-        res.status(200).send(insertUser);
+    connection.query(sql, [user.user_name, user.user_pwd, user.user_role], async function (err, data) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
       } else {
-        res.status(400).send({});
+        let insertUser = null
+        const userId = data.insertId
+        request['userId'] = userId;
+        if (request.user_type == 2) {
+          insertUser = await contractorController.insertContractor(request)
+        } else if (request.user_type == 3) {
+          insertUser = await clientController.insertClient(request)
+        }
+
+        if (insertUser.success) {
+          res.status(200).send(insertUser);
+        } else {
+          res.status(400).send({});
+        }
       }
-    }
-  });
+    });
+  } catch (e) {
+    console.log("error -> ", e)
+    res.status(500).send({});
+  }
 };
 
 exports.logIn = async function (req, res) {

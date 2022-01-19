@@ -8,9 +8,9 @@ exports.getJobs = async function (req, res) {
   if (verifyToken.success) {
     connection.query("SELECT * FROM jobs", (err, result) => {
       if (err) {
-        res.status(500).json(err)
+        res.status(500).json({ data: err })
       } else {
-        res.status(200).json(result)
+        res.status(200).json({ data: result })
       }
     });
   } else {
