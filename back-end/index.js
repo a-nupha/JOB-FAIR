@@ -14,7 +14,7 @@ const bodyParser = require('body-parser');
 const users = require('./controller/userController')
 const register = require('./controller/registerController')
 // const booking = require('./controller/bookingController')
-// const clients = require('./controller/clientController')
+const clients = require('./controller/clientController')
 // const contractors = require('./controller/contractorController')
 const jobs = require('./controller/jobController')
 const functions = require('./functions')
@@ -105,3 +105,17 @@ app.get('/api/photos', async (req, res) => {
 
 app.post("/api/register", register.insertUsers)
 // app.use('/api/users', [users, register, clients, contractors]);
+
+app.put("/api/user/approve", async (req, res) => {
+    // const verifyToken = functions.authenticateToken(functions.getTokenfromBearer(req.header('authorization')));
+    // if (verifyToken.success) {
+    if (true) {
+        let approve = await clients.approveUser(req);
+        if (approve.success) {
+            res.status(200).send(approve.data)
+        } else {
+            res.status(500).send(approve.data);
+        }
+    }
+})
+
