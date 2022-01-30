@@ -1,8 +1,7 @@
 const express = require("express");
 const mysql = require("mysql");
 const db = require("../config/db")
-const functions = require('../functions')
-const connection = db.connection;
+const functions = require('../functions');
 
 exports.insertContractor = async function (req) {
     return new Promise(function (resolve, reject) {
@@ -43,7 +42,7 @@ exports.insertContractor = async function (req) {
                   VALUES
                 ( ${valuesstring} )`;
 
-            connection.query(sql, ary_result, function (err, data) {
+            db.query(sql, ary_result, function (err, data) {
                 if (err) {
                     reject({ success: false, data: err })
                 } else {

@@ -2,7 +2,6 @@ const express = require("express");
 const mysql = require("mysql");
 const db = require("../config/db")
 const functions = require('../functions')
-const connection = db.connection;
 
 exports.insertClient = async function (req, res) {
 
@@ -43,7 +42,7 @@ exports.insertClient = async function (req, res) {
                   VALUES
                 ( ${valuesstring} )`;
 
-            connection.query(sql, ary_result, function (err, data) {
+            db.query(sql, ary_result, function (err, data) {
                 if (err) {
                     reject({ success: false, data: err });
                 } else {

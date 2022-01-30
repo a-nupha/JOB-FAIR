@@ -18,7 +18,7 @@ const clients = require('./controller/clientController')
 // const contractors = require('./controller/contractorController')
 const jobs = require('./controller/jobController')
 const functions = require('./functions')
-const dbConfig = require('./config/db')
+const db = require('./config/db')
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -31,23 +31,23 @@ app.listen(PORT, function () {
     console.log(`server is running ${PORT}`);
 })
 
-const connection = mysql.createPool(dbConfig.db_config);
+// const connection = mysql.createPool(dbConfig.db_config);
 
-// app.post("/register_", (req, res) => {
-//     const request = req.body
-//     let user_data = {
-//         username: request.username,
-//         position: "admin"
-//     }
-//     // const token = jwt.sign(user_data, process.env.TOKEN_SECRET, { expiresIn: '5m' });
-//     const token = functions.generateAccessToken(user_data);
-//     // console.log("token --> ", token)
+app.post("/register_", (req, res) => {
+    const request = req.body
+    let user_data = {
+        username: request.username,
+        position: "admin"
+    }
+    // const token = jwt.sign(user_data, process.env.TOKEN_SECRET, { expiresIn: '5m' });
+    const token = functions.generateAccessToken(user_data);
+    // console.log("token --> ", token)
 
-//     res.send({
-//         username: req.body.username,
-//         token: token
-//     });
-// });
+    res.send({
+        username: req.body.username,
+        token: token
+    });
+});
 
 app.post("/api/login", register.logIn);
 

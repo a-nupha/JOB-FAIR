@@ -2,7 +2,6 @@
 const dotenv = require('dotenv');
 const db = require("./config/db")
 const jwt = require('jsonwebtoken');
-const connection = db.connection;
 
 // get config vars
 const config = dotenv.config();
@@ -63,7 +62,7 @@ module.exports.checkIsDupicateUser = async function (request) {
                 SELECT ci_idcard as t FROM client_info ) as g 
                 where g.t = '${request.username}' OR g.t = '${request.idcard}'`
 
-            connection.query(sql, function (err, res) {
+            db.query(sql, function (err, res) {
                 if (err) {
                     reject({ result: false, data: err })
                 } else {
