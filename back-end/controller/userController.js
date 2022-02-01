@@ -6,8 +6,6 @@ const crypto = require('crypto');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const functions = require('../functions')
-
-const connection = db.connection;
 const config = dotenv.config();
 const algorithm = process.env.ALGORITHM;
 const key = process.env.SECRET_KEY;
@@ -15,7 +13,7 @@ const key = process.env.SECRET_KEY;
 exports.getUsers = async function (req, res) {
   const verifyToken = functions.authenticateToken(functions.getTokenfromBearer(req.header('authorization')));
   if (verifyToken.success) {
-    connection.query("SELECT * FROM user", (err, result) => {
+    db.query("SELECT * FROM user", (err, result) => {
       if (err) {
         res.status(500).json(err)
       } else {

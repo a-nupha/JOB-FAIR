@@ -33,30 +33,25 @@ exports.insertUsers = async function (req, res) {
       idcard: request.idcard,
     })
 
-    console.log("checkIsDupicate --> ", checkIsDupicate)
-
     if (checkIsDupicate.result) {
       res.status(400).send({
         success: false,
         data: {},
-        message: "is dupicate user!!"
+        message: "Username or Card ID is dupicate!"
       });
       return;
     }
 
     let insertUser = null
-    let userId = null
-    let sql = `INSERT INTO user 
-      ( user_name, user_pwd, user_role )
-        VALUES
-      ( ?, ?, ? )`;
+    let sql = `INSERT INTO user ( user_name, user_pwd, user_role ) VALUES ( ?, ?, ? )`;
 
     db.query = util.promisify(db.query);
     db.commit = util.promisify(db.commit);
     db.rollback = util.promisify(db.rollback);
     db.beginTransaction = util.promisify(db.beginTransaction);
     await db.beginTransaction();
-    const insertUserResponse = await db.query(sql, [user.user_name, user.user_pwd, user.user_role]);
+    const userRole = request.user_type == 1 ? "admin" : request.user_type == 2 ? "contractor" : "client"
+    const insertUserResponse = await db.query(sql, [user.user_name, user.user_pwd, userRole]);
 
     request['userId'] = insertUserResponse.insertId;
     console.log("request --> ", request)
@@ -64,13 +59,15 @@ exports.insertUsers = async function (req, res) {
       insertUser = await contractorController.insertContractor(request)
     } else if (request.user_type == 3) {
       insertUser = await clientController.insertClient(request)
+    } else if (request.user_type == 1) {
+      insertUser = { success: true, data: {} }
     }
 
     console.log("insertUser --> ", insertUser)
     if (insertUser.success) {
       res.status(200).send({ result: true, message: 'insert successfully !.' });
     } else {
-      res.status(400).send({});
+      res.status(400).send({ result: false, message: 'insert unsuccessfully !.' });
     }
     await db.commit();
 
@@ -85,8 +82,10 @@ exports.insertUsers = async function (req, res) {
 
 exports.logIn = async function (req, res) {
   const request = req.body;
-  db.query(`SELECT * FROM user u WHERE u.user_name = '${request.username}'`, (err, result) => {
-    console.log("result --> ", result)
+  db.query(`SELECT u.* FROM user u 
+            left join contractor_info ct on u.user_id = ct.user_id
+            left join client_info ci on u.user_id = ci.user_id
+            where u.user_name = '${request.username}' AND (ct.ci_status = 1 || ci.ci_status = 1)`, (err, result) => {
     if (err) {
       res.status(500).json(err)
     } else {
