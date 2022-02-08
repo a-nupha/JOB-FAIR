@@ -1,17 +1,17 @@
 const mysql = require("mysql");
 const util = require("util");
-// const db_config = { // remote
-//   user: "wasun_199",
-//   host: "db4free.net",
-//   password: "WAsun@123",
+const db_config = { // remote
+  user: "jobfairdev",
+  host: "10.137.130.94",
+  password: "1234",
+  database: "job_fair_dev",
+};
+// const db_config = { // local
+//   user: "root",
+//   host: "localhost",
+//   password: "12345678",
 //   database: "job_fair",
 // };
-const db_config = { // local
-  user: "root",
-  host: "localhost",
-  password: "12345678",
-  database: "job_fair",
-};
 
 const db = mysql.createConnection(db_config);
 

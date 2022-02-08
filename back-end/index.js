@@ -29,13 +29,9 @@ app.use(fileUpload({
 app.listen(PORT, function () {
     console.log(`server is running ${PORT}`);
 })
-
 app.post("/api/login", register.logIn);
-
 app.get("/api/users", users.getUsers)
-
 app.get("/api/jobs", jobs.getJobs)
-
 app.post('/api/photos', async (req, res) => {
     try {
         if (!req.files) {
@@ -77,14 +73,17 @@ app.post('/api/photos', async (req, res) => {
         res.status(500).send(err);
     }
 });
-
 app.get('/api/photos', async (req, res) => {
     const filename = req.query.filename
     const contents = fs.readFileSync(`./assets/uploads/${filename}.jpg`, { encoding: 'base64' });
     res.send(contents)
 })
-
 app.post("/api/register", register.insertUsers)
-
 app.put("/api/user/approve", clients.approveUser)
+app.get("/api/jobs/listbyclient", jobs.listbyclient)
+app.get("/api/jobs/listbycontractor", jobs.listbycontractor)
+app.post("/api/jobs/create", jobs.createJob)
+
+
+
 
